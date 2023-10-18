@@ -188,6 +188,7 @@ def plot_distrib(df, astar, depth, idx):
     ax.set_ylabel('Diferença de ' + x_label[idx] + r' de $X_i$')
     ax.set_title(f'Distribuição da Diferença de ' + x_label[idx])
 
+    plt.savefig(f"distribuiçãoVAR_{idx}.png")
     plt.tight_layout()
 
     plt.show()
@@ -211,7 +212,7 @@ def plot_boxplots(df):
     var_comp = [["len_AStar", "len_dfs", "delta_len"],
                 ["dist_AStar", "dist_dfs", "delta_dist"],
                 ["time_AStar", "time_dfs", "delta_time"]]
-    labels4 = ["A*", "Best Depth", r"${\Delta}$"]
+    labels4 = ["A*", "Depth", r"${\Delta}$"]
 
     var_plot = [(variable_plot, labels1),
                 (var_nao_inform, labels2),
@@ -235,4 +236,5 @@ def plot_boxplots(df):
             ax.set_title(titles[var], fontsize=20)
             ax.grid(which='major', axis='y', linestyle='--', alpha=0.7)
 
+        plt.savefig(f"distribuição_{i}.png")
         plt.show()
