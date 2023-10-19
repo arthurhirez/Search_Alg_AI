@@ -23,6 +23,10 @@ class NewExperiment():
         self.G = Graph
         self.df = Dataframe
 
+
+    # Funcao heuristica utilizada nos algoritmos de busca informada.
+    # Quando "euclidiana = False", calcula-se a distancia de duas nos que possuem
+    # latitude e longitude
     def heuristica(self, node_A, node_B, euclidiana=True):
 
         coord_a = (0, 0)
@@ -51,9 +55,15 @@ class NewExperiment():
         else:
             return haversine(coord_a, coord_b)
 
+    # Funcao para medir tempo dos algoritmos gerando inicios (source) e destinos (target) da busca aleatoriamente.
+    # Retorna:
+    # -caminho da busca;
+    # -tamanho do caminho (numero de nos percorridos);
+    # -distancia total do caminho, considerando pesos das arestas;
+    # -tempo medio de "n_rep" execucoes.
     def elapsed_time(self, n_rep=10):
         # Define source/target
-        idx_s = np.random.randint(0, len(self.df))
+        idx_s = np.random.randint(0, len(self.df)) #
         source = self.df.iloc[idx_s]['label_source']
 
         idx_t = np.random.randint(0, len(self.df))
@@ -120,6 +130,7 @@ class NewExperiment():
                 path_gbf, len(path_gbf), dist_gbf, avg(gbf_time),
                 ]
 
+    # Executa experimento "n_exp" vezes, onde 
     def run_experiment(self, n_exp, n_rep):
         start_time = time.time()
         for exp in range(n_exp):
@@ -144,7 +155,7 @@ class NewExperiment():
         self.df_result['delta_lenNao'] = self.df_result['len_dfs'] - self.df_result['len_djk']
         self.df_result['delta_distNao'] = self.df_result['dist_dfs'] - self.df_result['dist_djk']
 
-
+# Plotagem de histogramas e distribuicoes dos dados (Kernel density estimator)
 def plot_distrib(df, astar, depth, idx):
     x_label = ['Tamanho dos caminhos', 'Distância dos caminhos', 'Tempo de execução']
     title = ['Distribuição do tamanho dos caminhos', 'Distribuição da extensão dos caminhos',
@@ -171,6 +182,7 @@ def plot_distrib(df, astar, depth, idx):
     ax.set_ylabel('Número de caminhos')
     ax.set_title(title[idx])
 
+    # Teste u de mann whitney para conferir se os dados provem de uma mesma distribuicao ou nao
     _, p_value = st.mannwhitneyu(x=df[astar], y=df[depth])
     ax.bar([], [], label=f'p-value = {p_value:.2f}', fill=False)
     ax.legend()
@@ -193,6 +205,7 @@ def plot_distrib(df, astar, depth, idx):
 
     plt.show()
 
+# Plotagem de boxplots
 def plot_boxplots(df):
     variable_plot = [["len_AStar", "len_gbf", "len_djk", "len_dfs"],
                      ["dist_AStar", "dist_gbf", "dist_djk", "dist_dfs"],
