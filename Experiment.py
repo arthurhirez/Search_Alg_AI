@@ -12,6 +12,7 @@ import time
 import math
 from haversine import haversine
 
+
 class NewExperiment():
     def __init__(self, Graph, Dataframe):
         self.df_result = pd.DataFrame(columns=['path_AStar', 'len_AStar', 'dist_AStar', 'time_AStar',
@@ -24,10 +25,16 @@ class NewExperiment():
         self.df = Dataframe
 
 
-    # Funcao heuristica utilizada nos algoritmos de busca informada.
-    # Quando "euclidiana = False", calcula-se a distancia de duas nos que possuem
-    # latitude e longitude
-    def heuristica(self, node_A, node_B, euclidiana=True):
+    # Conversao da distancia haversine para euclidiana
+    # (latitude e longitude para uma esfera centrada na origem com raio "radius")
+    def conversao_coordenadas(self, lat, long, radius):
+        x = np.cos(lat*np.pi/180)*np.sin(long*np.pi/180)
+        y = np.sin(lat*np.pi/180)*np.sin(long*np.pi/180)
+        z = np.cos(long*np.pi/180)
+        return radius*np.array([x, y, z])
+
+    # Funcao heuristica da distancia euclidiana (diferente da haversine) para passar para o networkx
+    def heuristica(self, node_A, node_B, euclid = True):
 
         coord_a = (0, 0)
         coord_b = (0, 0)
@@ -36,24 +43,29 @@ class NewExperiment():
         try:
             ca_X = self.df.loc[(self.df['label_source'] == node_A)]['pos_X'].iloc[0]
             ca_Y = self.df.loc[(self.df['label_source'] == node_A)]['pos_Y'].iloc[0]
-            coord_a = (ca_X, ca_Y)
+            coord_a = (ca_Y, ca_X)
         except IndexError:
             flag = 1
 
         try:
             cb_X = self.df.loc[(self.df['label_source'] == node_B)]['pos_X'].iloc[0]
             cb_Y = self.df.loc[(self.df['label_source'] == node_B)]['pos_Y'].iloc[0]
-            coord_b = (cb_X, cb_Y)
+            coord_b = (cb_Y, cb_X)
         except IndexError:
             flag = -1
 
         if flag == 1: coord_a = coord_b
         if flag == -1: coord_b = coord_a
 
-        if euclidiana:
-            return math.dist(coord_a, coord_b)
+        if(euclid):
+            raio_terra = 6378.1370
+            coord_a_euclid = self.conversao_coordenadas(coord_a[0], coord_a[1], raio_terra)
+            coord_b_euclid = self.conversao_coordenadas(coord_b[0], coord_b[1], raio_terra)
+            return np.linalg.norm(coord_a_euclid - coord_b_euclid)
         else:
             return haversine(coord_a, coord_b)
+
+
 
     # Funcao para medir tempo dos algoritmos gerando inicios (source) e destinos (target) da busca aleatoriamente.
     # Retorna:
