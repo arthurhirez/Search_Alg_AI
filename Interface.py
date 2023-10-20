@@ -172,10 +172,10 @@ class UserInterface():
 
     def _apply_haversine(self, data):
         df = data.copy()
-
+        # "long": "pos_X", "lat": "pos_Y
         for i in range(len(df) - 1):
-            coord_a = (df.pos_X[i], df.pos_Y[i])
-            coord_b = (df.pos_X[i + 1], df.pos_Y[i + 1])
+            coord_a = (df.pos_Y[i], df.pos_X[i])
+            coord_b = (df.pos_Y[i + 1], df.pos_X[i + 1])
             df.loc[[i], ['weight']] = haversine(coord_a, coord_b)
 
         return df

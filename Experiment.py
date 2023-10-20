@@ -217,12 +217,56 @@ def plot_distrib(df, astar, depth, idx):
 
     plt.show()
 
+def plot_distrib_present(df, astar, depth, idx):
+    x_label = ['Tamanho dos caminhos', 'Distância dos caminhos', 'Tempo de execução']
+    title = ['Distribuição do tamanho dos caminhos', 'Distribuição da extensão dos caminhos',
+             'Distribuição dos tempos de execução']
+    delta = ['delta_len', 'delta_dist', 'delta_time']
+
+    fig, axes = plt.subplots(1, 2, figsize=(12, 6))
+
+    param_bins = 1
+    ax = axes[0]
+    ax.set_xlabel(x_label[idx])
+
+    log_bool = False
+    if (idx == 2):
+        log_bool = True
+        ax.set_xlabel(x_label[idx] + " (Escala log)")
+        param_bins = 0.1
+
+    sns.histplot(data=df, x=astar, binwidth=param_bins, color='red', label='A*', alpha=0.30, ax=ax, kde=True,
+                 log_scale=log_bool)
+    sns.histplot(data=df, x=depth, binwidth=param_bins, color='blue', label='Depth', alpha=0.85, ax=ax, kde=True,
+                 log_scale=log_bool)
+
+    ax.set_ylabel('Número de caminhos')
+    ax.set_title(title[idx])
+
+    # Teste u de mann whitney para conferir se os dados provem de uma mesma distribuicao ou nao
+    _, p_value = st.mannwhitneyu(x=df[astar], y=df[depth])
+    ax.bar([], [], label=f'p-value = {p_value:.2f}', fill=False)
+    ax.legend()
+
+
+    ax = axes[1]
+    df_ord = df.sort_values(by=delta[idx]).reset_index().copy()
+    ax.bar(df_ord.index, df_ord[delta[idx]], fill=False, ec='slategray')
+    ax.set_xlabel(r'Elemento $X_i$')
+    ax.set_ylabel('Diferença de ' + x_label[idx] + r' de $X_i$')
+    ax.set_title(f'Distribuição da Diferença de ' + x_label[idx])
+
+    plt.savefig(f"distribuiçãoVAR_{idx}.png")
+    plt.tight_layout()
+
+    plt.show()
+
 # Plotagem de boxplots
 def plot_boxplots(df):
-    variable_plot = [["len_AStar", "len_gbf", "len_djk", "len_dfs"],
-                     ["dist_AStar", "dist_gbf", "dist_djk", "dist_dfs"],
-                     ["time_AStar", "time_gbf", "time_djk", "time_dfs"]]
-    labels1 = ["A*", "Best first", "Dijkstra", "Depth"]
+    variable_plot = [["len_AStar", "len_gbf", "len_dfs"],
+                     ["dist_AStar", "dist_gbf", "dist_dfs"],
+                     ["time_AStar", "time_gbf", "time_dfs"]]
+    labels1 = ["A*", "Best first", "Depth"]
 
     var_nao_inform = [["len_djk", "len_dfs", "delta_lenNao"],
                       ["dist_djk", "dist_dfs", "delta_distNao"],
