@@ -263,10 +263,10 @@ def plot_distrib_present(df, astar, depth, idx):
 
 # Plotagem de boxplots
 def plot_boxplots(df):
-    variable_plot = [["len_AStar", "len_gbf", "len_dfs"],
-                     ["dist_AStar", "dist_gbf", "dist_dfs"],
-                     ["time_AStar", "time_gbf", "time_dfs"]]
-    labels1 = ["A*", "Best first", "Depth"]
+    variable_plot = [["len_AStar", "len_gbf", "len_djk", "len_dfs"],
+                     ["dist_AStar", "dist_gbf","dist_djk",  "dist_dfs"],
+                     ["time_AStar", "time_gbf","time_djk",  "time_dfs"]]
+    labels1 = ["A*", "Best first","Dijkstra",  "Depth"]
 
     var_nao_inform = [["len_djk", "len_dfs", "delta_lenNao"],
                       ["dist_djk", "dist_dfs", "delta_distNao"],
