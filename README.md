@@ -1,3 +1,5 @@
+The repository showcases the results of a study comparing different search algorithms (informed and uninformed) in the context of an application that suggests the best path to be taken in the subway network of the city of São Paulo - SP, Brazil.
+
 # METHODOLOGY
 
 In the first step, the authors implement the informed search algorithms A* and Best-First, as well as the uninformed Depth First Search. Additionally, data preprocessing is performed to model the problem as a graph using the data structure implemented in the NetworkX library.
